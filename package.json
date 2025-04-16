@@ -1,18 +1,22 @@
 {
-  "name": "yapayzekakoordinatorlugu-backendprojesi",
+  "title": "E-Commerce API",
+  "name": "ecommerce",
   "version": "1.0.0",
+  "description": "E-Commerce API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon",
+    "debug": "DEBUG=* nodemon",
+    "dev": "node swaggerAutogen && nodemon index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Rabia",
+  "license": "ISC Licence",
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2",
