@@ -39,7 +39,23 @@ app.all('/', (req, res) => {
     })
 });
 
+const session = require('cookie-session')
+app.use(session({
+    secret: process.env.SECRET_KEY,
+    maxAge: 1000*60*60*24*1
+}));
+app.use(require('./src/middlewares/cartSession'))
+
 app.use(require('./src/routes'))
+
+// NotFound: 
+app.all('*', (req, res) => {
+    
+    res.status(404).send({
+        error: true,
+        message: 'Route is not found!'
+    })
+})
 
 app.use(require('./src/middlewares/errorHandler'))
 
