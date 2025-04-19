@@ -6,6 +6,7 @@ const Stripe = require('stripe');
 
 const sendMail = require('../helpers/sendMail')
 const create = require('../services/orderCreate');
+const {increase} = require('../services/controlQuantity')
 
 const CURRENCY = 'TRY'
 const DELIVERY_CHARGE = 55
@@ -103,6 +104,10 @@ module.exports = {
 
             const result = await Order.findOneAndUpdate({_id: orderId}, {status}, {new: true})
 
+            if(result.status === 'Cancelled'){
+                await increase(result.items)
+            }
+
             res.status(202).send({
                 error: false,
                 message: 'Status updated',
@@ -129,31 +134,24 @@ module.exports = {
             Cancel an order if it has not been confirmed.
             <ul> Example:
                 <li>URL/:id - DELETE request</li>
+                <li>Body: { "orderId": "123"} || req.params${id}</li>
             </ul>
         `
     */
-        
-        let customFilter = [];
-        
-        if(!req.user.isAdmin){
-            customFilter = {userId: req.user._id}
-        }
-        
-        const data = await Order.findOne({_id: req.params.id, ...customFilter});
-        
-        if(!req.user.isAdmin && data.status !== 'Pending'){
-            res.status(404).send({
-                error: true,
-                message: 'You cannot cancel because your order has been confirmed'
-            })
+
+        let {id} = req.params.id;
+
+        if(!req.params.id){
+            id = req.body.productId   
         }
         
         const result = await Order.findOneAndUpdate(
-            {_id: data._id},
+            {_id: id},
             {$set: {status: 'cancelled'}},
             {new: true}
         );
         
+        await increase(result.items)
         
         res.status(result ? 204 : 404).send({
             error: !result,
