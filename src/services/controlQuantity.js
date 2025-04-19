@@ -1,6 +1,7 @@
 "use strict"
 
 const Product = require('../models/product');
+const sendMail = require('../helpers/sendMail')
 
 
 module.exports = async (items) => {
@@ -30,7 +31,7 @@ module.exports = async (items) => {
         // Stok durumu düşükse, yöneticiyi bilgilendir
         if (product.stock <= 5) {
             await sendMail(
-                adminEmail, 
+                process.env.ADMIN_EMAIL, 
                 'Stokta Düşük Ürün', 
                 `
                     <h3>Stokta Düşük Ürün Bildirimi</h3>
