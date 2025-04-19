@@ -6,6 +6,20 @@ const User = require('../models/user');
 module.exports = {
 
     addToCart: async(req, res) => {
+
+        /*
+            #swagger.tags = ["Cart"]
+            #swagger.summary = "Add Product to Cart"
+            #swagger.description = "Adds a product to the user's session-based cart."
+            #swagger.parameters['body'] = {
+                in: 'body',
+                required: true,
+                schema: {
+                    productId: "string",
+                    quantity: 1
+                }
+            }
+        */
         
 
             const {productId, quantity = 1} = req.body
@@ -39,6 +53,19 @@ module.exports = {
     },
 
     removeFromCart: async(req, res) => {
+
+         /*
+            #swagger.tags = ["Cart"]
+            #swagger.summary = "Remove Product from Cart"
+            #swagger.description = "Removes a product from the user's cart based on productId."
+            #swagger.parameters['body'] = {
+                in: 'body',
+                required: true,
+                schema: {
+                    productId: "string"
+                }
+            }
+        */
         
         if(!req.session.cart) {
             res.status(400).send({
@@ -66,6 +93,20 @@ module.exports = {
 
     updateCart: async(req, res) => {
 
+         /*
+            #swagger.tags = ["Cart"]
+            #swagger.summary = "Update Product in Cart"
+            #swagger.description = "Updates the quantity of a product in the cart."
+            #swagger.parameters['body'] = {
+                in: 'body',
+                required: true,
+                schema: {
+                    productId: "string",
+                    quantity: 2
+                }
+            }
+        */
+
         if(!req.session.cart) {
             res.status(400).send({
                 error: true,
@@ -86,6 +127,12 @@ module.exports = {
     },
 
     getUserCart: async(req, res) => {
+
+         /*
+            #swagger.tags = ["Cart"]
+            #swagger.summary = "Get User Cart"
+            #swagger.description = "Returns the user's current session-based cart."
+        */
 
         res.status(200).send({
             error: false,

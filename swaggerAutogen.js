@@ -44,6 +44,7 @@ const document = {
 		"Brand": require('./src/models/brand').schema.obj,
 		"Category": require('./src/models/category').schema.obj,
 		"Product": require('./src/models/product').schema.obj,
+		"Order": require('./src/models/order').schema.obj,
 		"Token": require('./src/models/token').schema.obj,
 	}
 }

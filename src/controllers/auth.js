@@ -16,7 +16,7 @@ module.exports = {
                in: "body",
                required: true,
                schema: {
-                   "username": "test",
+                   "email": "test",
                    "password": "1234",
                }
            }
@@ -103,11 +103,6 @@ module.exports = {
                 throw new Error('Wrong password or id.')
             }
 
-            if (!user.isActive) {
-                res.errorStatusCode = 401;
-                throw new Error('This account is not active.')
-            }
-
             const accessToken = jwt.sign(user.toJSON(), process.env.ACCESS_KEY, { expiresIn: process.env.ACCESS_EXP })
 
             res.status(200).send({
@@ -126,8 +121,9 @@ module.exports = {
             #swagger.description = 'Delete token-key.'
         */
 
-        const auth = req.headers?.authorization || null // "Token fdsalfkjasdlkfjlaskdfsd"
-        const tokenKey = auth ? auth.split(' ') : null // ['Token' , 'dsfasdfasdfasdfasd']
+        const auth = req.headers?.authorization || null //* Token tokenKey
+
+        const tokenKey = auth ? auth.split(' ') : null  //* ['Token', 'tokenKey']
 
         let message = 'No need any process for logout. You must delete JWT tokens.', result;
 
