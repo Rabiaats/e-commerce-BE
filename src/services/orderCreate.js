@@ -1,5 +1,5 @@
 const Order = require("../models/order");
-const {decrease} = require('./controlQuantity')
+const {decrease} = require('./controlStock')
 
 module.exports = async (userId, items, address, paymentMethod, status) => {
     

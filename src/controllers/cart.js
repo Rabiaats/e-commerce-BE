@@ -34,9 +34,9 @@ module.exports = {
                 throw new Error('Product was not found')
             }
 
-            if (product.quantity < quantity) {
+            if (product.stock < quantity) {
                 return res.status(400).send({ error: true, message: "There are not enough products in stock"});
-              }
+            }
 
             if(req.session.cart.find(item => item.productId === product._id)){
                 item.quantity += quantity
@@ -72,6 +72,12 @@ module.exports = {
                 error: true,
                 message: "The cart is empty"
             })
+        }
+
+        const product = await Product.findOne({_id: req.body.productId});
+        
+        if(!product){
+            throw new Error('Product was not found')
         }
 
         req.session.cart = req.session.cart.filter(item => item.productId !== req.body.productId);
@@ -113,6 +119,13 @@ module.exports = {
                 message: "The cart is empty",
                 result:[]
             })
+        }
+
+        const product = await Product.findOne({_id: req.body.productId});
+        
+        if(!product){
+            req.session.cart = req.session.cart.filter(item => item.productId !== req.body.productId);
+            throw new Error('The product was not found and has been removed from your cart')
         }
 
         const item = req.session.cart.find(item => item.productId == req.body.productId);

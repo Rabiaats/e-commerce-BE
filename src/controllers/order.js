@@ -6,7 +6,7 @@ const Stripe = require('stripe');
 
 const sendMail = require('../helpers/sendMail')
 const create = require('../services/orderCreate');
-const {increase} = require('../services/controlQuantity')
+const {increase} = require('../services/controlStock')
 
 const CURRENCY = 'TRY'
 const DELIVERY_CHARGE = 55

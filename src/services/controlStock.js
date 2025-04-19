@@ -57,7 +57,7 @@ module.exports = {
             
             if (product) {
             
-                product.quantity += item.quantity;
+                product.stock += item.quantity;
                 await product.save()
 
             }
