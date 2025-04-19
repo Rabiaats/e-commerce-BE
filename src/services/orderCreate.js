@@ -1,5 +1,5 @@
 const Order = require("../models/order");
-const quantity = require('./statusQuantity')
+const {decrease} = require('./controlQuantity')
 
 module.exports = async (userId, items, address, paymentMethod, status) => {
     
@@ -7,12 +7,12 @@ module.exports = async (userId, items, address, paymentMethod, status) => {
         throw new Error("Cart is empty!");
     }
     
-    const updateItems = await quantity(items)
+    const updateItems = await decrease(items)
 
     let totalAmount = 0;
 
     for (const item of updateItems) {
-        totalAmount += item.price * item.quantity;
+        totalAmount += item.price * item.decrease;
     }
 
     const newOrder = await Order.create({
