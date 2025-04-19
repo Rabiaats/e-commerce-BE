@@ -12,7 +12,7 @@ module.exports = async (userId, items, address, paymentMethod, status) => {
     let totalAmount = 0;
 
     for (const item of updateItems) {
-        totalAmount += item.price * item.decrease;
+        totalAmount += item.price * item.quantity;
     }
 
     const newOrder = await Order.create({
@@ -21,6 +21,7 @@ module.exports = async (userId, items, address, paymentMethod, status) => {
         amount: totalAmount,
         address,
         status,
+        payment,
         paymentMethod,
     });
 

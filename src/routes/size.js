@@ -3,18 +3,18 @@
 const router = require('express').Router();
 const sizeCategory = require('../helpers/size');
 
-const { isAdmin} = require('../middlewares/permissions');
 
 router.get('/:categoryId', (req, res) => {
     const categoryId = req.params.categoryId
     if(!sizeCategory[categoryId]){
-        return res.status(404).json({
+        return res.status(404).send({
             error: true,
-            message: `The size options fot the category are not defined`,
+            message: `The size options for the category are not defined`,
+            sizes: sizeCategory[categoryId]
         });
     }
 
-    res.json({
+    res.send({
         error: false,
         categoryId,
         sizes: sizeCategory[categoryId]

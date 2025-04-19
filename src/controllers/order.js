@@ -41,7 +41,7 @@ module.exports = {
 
         const result = await res.getModelList(Order, customFilter, [
             {path: 'userId', select: 'email firstname lastname phone'},
-            {path: 'products', populate: {path: 'productId'}},
+            {path: 'items', populate: {path: 'productId'}},
         ])
 
         res.status(200).send({
@@ -74,7 +74,7 @@ module.exports = {
         
         const result = await Order.findOne({_id: req.params.id, ...customFilter}).populate([
             {path: 'userId', select: 'email firstname lastname phone'},
-            {path: 'products', populate: {path: 'productId'}},
+            {path: 'items', populate: {path: 'productId'}},
         ])
         
         res.status(200).send({
@@ -99,7 +99,7 @@ module.exports = {
     */
 
         try {
-            
+
             const { orderId, status} = req.body;
 
             const result = await Order.findOneAndUpdate({_id: orderId}, {status}, {new: true})
@@ -139,11 +139,7 @@ module.exports = {
         `
     */
 
-        let {id} = req.params.id;
-
-        if(!req.params.id){
-            id = req.body.productId   
-        }
+        const id = req.body.orderId;
         
         const result = await Order.findOneAndUpdate(
             {_id: id},
@@ -162,33 +158,33 @@ module.exports = {
     //COD
     paymentCOD: async(req, res) => {
 
-         /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "Payment by Cash on Delivery"
-        #swagger.description = `
-            Create a new order with "Cash on Delivery" payment method.
-           <ul> Example usage:
-            <li>POST /paymentCOD</li>
-            <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
-        </ul>
-        `
-           #swagger.requestBody = {
-        required: true,
-        content: {
-            "application/json": {
-                schema: {
-                    type: "object",
-                    required: ["address"],
-                    properties: {
-                        address: {
-                            type: "string",
-                            example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+        /*
+            #swagger.tags = ["Orders"]
+            #swagger.summary = "Payment by Cash on Delivery"
+            #swagger.description = `
+                Create a new order with "Cash on Delivery" payment method.
+                <ul> Example usage:
+                    <li>POST /paymentCOD</li>
+                    <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
+                </ul>
+            `
+            #swagger.requestBody = {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            required: ["address"],
+                            properties: {
+                                address: {
+                                    type: "string",
+                                    example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
     */
      
     if(!req.body.address){
@@ -212,7 +208,7 @@ module.exports = {
         );
         
         await sendMail(
-            result.userId.email,
+            req.user.email,
             'New Paid Order Received',
             `<h3>Your order number ${result._id} has been created and is being prepared</h3>`
         );
@@ -227,34 +223,34 @@ module.exports = {
     // stripe
     paymentStripe: async(req, res) => {
 
-            /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "Payment by Cash on Delivery"
-        #swagger.description = `
-            Create a new order with "Cash on Delivery" payment method.
-           <ul> Example usage:
-            <li>POST /paymentCOD</li>
-            <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
-        </ul>
-        `
-           #swagger.requestBody = {
-        required: true,
-        content: {
-            "application/json": {
-                schema: {
-                    type: "object",
-                    required: ["address"],
-                    properties: {
-                        address: {
-                            type: "string",
-                            example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+        /*
+            #swagger.tags = ["Orders"]
+            #swagger.summary = "Payment by Cash on Delivery"
+            #swagger.description = `
+                Create a new order with "Cash on Delivery" payment method.
+                <ul> Example usage:
+                    <li>POST /paymentCOD</li>
+                    <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
+                </ul>
+            `
+            #swagger.requestBody = {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            required: ["address"],
+                            properties: {
+                                address: {
+                                    type: "string",
+                                    example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+                                }
+                            }
                         }
                     }
                 }
             }
-        }
-    }
-    */
+        */
         
         try{
             
@@ -269,8 +265,8 @@ module.exports = {
             
             req.body.userId = req.user._id;
             const items = req.session.cart;
-
-            const result = await create(req.body.userId, items, req.body.address,'Stripe', 'Preparing')
+            
+            const result = await create(req.body.userId, items, req.body.address,'Stripe', 'Pending')
             
             const line_items = items.map((item) => ({
                 price_data: {
@@ -293,14 +289,23 @@ module.exports = {
                 },
                 quantity: 1
             })
-            
+
             const session = await stripe.checkout.sessions.create({
-                // odeme bararili ile frontende success_url gider
-                success_url: `${origin}/verify?success=true&orderId=${result._id}`,
-                cancel_url: `${origin}/verify?success=false&orderId=${result._id}`,
+                payment_method_types: ["card"],
+                phone_number_collection: {
+                    enabled: true
+                },
                 line_items,
                 mode: 'payment',
+                // odeme bararili ise frontende success_url gider
+                success_url: `${origin}/verifyStripe?success=true&orderId=${result._id}`,
+                cancel_url: `${origin}/verifyStripe?success=false&orderId=${result._id}`,
+                metadata: {
+                    userId: req.body.userId,
+                    address: req.body.address
+                }
             })
+
             
             res.status(200).send({
                 error:false,
@@ -324,18 +329,12 @@ module.exports = {
     verifyStripe: async(req,res) => {
 
         /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "Verify Stripe Payment"
-        #swagger.description = `
-            Verify the Stripe payment and update the order status accordingly.
-            <ul> Example:
-                <li>URL/verifyStripe - POST request</li>
-                <li>Body: { "orderId": "123", "success": "true" }</li>
-            </ul>
-        `
+            #swagger.ignore = true
         */
+        //! window.location.href = response.data.session_url; -> frontend de ödeme tamamlanınca direk yonlendirilecek
+
         
-        const {orderId, success} = req.body;
+        const {orderId, success} = req.query;
 
         if (!orderId) {
             return res.status(404).send({
@@ -347,10 +346,11 @@ module.exports = {
         try {
             
             if(success === 'true'){
-                const result = await Order.findByIdAndUpdate(orderId, {payment: true},{new: true}).populate([
+                const result = await Order.findByIdAndUpdate(orderId, {payment: true, status: 'Preparing'},{new: true}).populate([
                     {path: 'userId', select:'email firstname lastname phone' },
                     { path: 'products', populate: { path: 'productId' } }
                 ])
+
                 req.session.cart = []
 
                 await sendMail(

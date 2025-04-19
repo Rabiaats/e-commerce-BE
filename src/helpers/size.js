@@ -13,4 +13,3 @@ module.exports = {
     "680024f786e905667f95c57d": ["Standart"], 
     "680024f786e905667f95c57f": ["Standart"],
 };
-  

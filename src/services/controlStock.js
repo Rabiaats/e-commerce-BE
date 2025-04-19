@@ -15,7 +15,8 @@ module.exports = {
             if (!product) {
                 throw new Error(`Product with ID ${item.productId} not found`);
             }
-            
+        
+
             if (product.stock < item.quantity) {
                 throw new Error(`Not enough stock for ${product.name}. Available stock: ${product.stock}`);
             }
@@ -45,6 +46,8 @@ module.exports = {
                 );
             }
         }
+
+        console.log(updatedItems)
     
         return updatedItems;
     },

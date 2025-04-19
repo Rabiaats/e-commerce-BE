@@ -8,7 +8,10 @@ module.exports = async (req, res, next) => {
     const auth = req.headers?.authorization || null // Token ...tokenKey... // Bearer ...accessToken...
     const tokenKey = auth ? auth.split(' ') : null // ['Token', '...tokenKey...'] // ['Bearer', '...accessToken...']
 
+    console.log(tokenKey)
+
     if (tokenKey) {
+
 
         if (tokenKey[0] == 'Token') { // SimpleToken
 

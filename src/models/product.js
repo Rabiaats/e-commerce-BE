@@ -41,9 +41,9 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         validate: {
             validator: function (value) {
-                const sizes = sizeCategory[this.category];
+                const sizes = sizeCategory[this.categoryId];
                 if (!sizes) {
-                    throw new Error(`The size options fot the category are not defined`);
+                    throw new Error(`The size options for the category are not defined`);
                 }
                       
                 return sizes.includes(value)

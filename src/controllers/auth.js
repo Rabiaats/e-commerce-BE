@@ -36,11 +36,6 @@ module.exports = {
             throw new Error('Wrong username/email or password.')
         }
 
-        if (!user.isActive) {
-            res.errorStatusCode = 401;
-            throw new Error('This account is not active.')
-        }
-
         /* Simple Token */
         let tokenData = await Token.findOne({ userId: user._id })
         if (!tokenData) {

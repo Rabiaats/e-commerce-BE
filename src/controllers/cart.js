@@ -93,7 +93,7 @@ module.exports = {
         res.status(200).send({
             error: false,
             message: 'the product has been removed',
-            result: cart.session.cart
+            result: req.session.cart
         })
     },
 
@@ -131,6 +131,10 @@ module.exports = {
         const item = req.session.cart.find(item => item.productId == req.body.productId);
         item.quantity = req.body.quantity;
 
+        if(item.quantity === 0){
+            req.session.cart = req.session.cart.filter(item => item.productId !== req.body.productId);
+        }
+
         res.status(200).json({ 
             error: false,
             message: "The product has been updated", 
@@ -149,7 +153,7 @@ module.exports = {
 
         res.status(200).send({
             error: false,
-            result: req.seesion.cart || []
+            result: req.session.cart || []
         })
 
     }

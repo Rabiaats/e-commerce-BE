@@ -18,7 +18,7 @@ module.exports = {
                 <ul> Examples:
                     <li>URL/?<b>filter[field1]=value1&filter[field2]=value1</b></li>
                     <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
-                    <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
+                    <li>URL/?<b>sort[fielSd1]=1&sort[field2]=-1</b></li>
                     <li>URL/?<b>page=2&limit=1</b></li>
                 </ul>
             `
@@ -44,26 +44,26 @@ module.exports = {
                 in: 'body',
                 required: true,
                 schema: {
-                $ref"#/definitions/Product"
-                    }
+                    $ref:"#/definitions/Product"
                 }
-            */
+            }
+        */
 
-                req.body.images = [];
+        req.body.images = [];
 
-                if(req.files){
-                    for(let file of req.files){
-                        req.body.images.push(file.path)
-                    }
-                };
+        if(req.files){
+            for(let file of req.files){
+                req.body.images.push(file.path)
+                }
+            };
 
-            const result = await Product.create(req.body)
+        const result = await Product.create(req.body)
     
-            res.status(201).send({
-                error: false,
-                result
-            })
-        },
+        res.status(201).send({
+            error: false,
+            result
+        })
+    },
     
         read: async (req, res) => {
             /*
@@ -80,7 +80,6 @@ module.exports = {
             ).populate([
                 {path: 'categoryId', select: 'name -_id'},
                 {path: 'brandId', select: 'name -_id'},
-                { path: 'variants', select: 'images size color price stock' }
             ])
     
             res.status(200).send({
@@ -98,7 +97,7 @@ module.exports = {
                     in: 'body',
                     required: true,
                     schema: {
-                    $ref"#/definitions/Product"
+                        $ref:"#/definitions/Product"
                     }
                 }
             */

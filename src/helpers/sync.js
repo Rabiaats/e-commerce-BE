@@ -188,7 +188,15 @@ const categories = [
       "createdAt": "2025-04-16T21:45:27.848Z",
       "updatedAt": "2025-04-16T21:45:27.848Z",
       "__v": 0
-    }
+    },
+    {
+      "_id": "6803ba3148664660f177adb2",
+      "name": "Pet Shop",
+      "image": "https://example.com/images/pet_shop.jpg",
+      "createdAt": "2025-04-19T14:58:57.620Z",
+      "updatedAt": "2025-04-19T14:58:57.620Z",
+      "__v": 0
+  }
   ]
 }
     */
@@ -412,13 +420,6 @@ const categories = [
       "__v": 0
     },
     {
-      "_id": "680024f786e905667f95c5ad",
-      "name": "L'Oréal",
-      "createdAt": "2025-04-16T21:45:27.881Z",
-      "updatedAt": "2025-04-16T21:45:27.881Z",
-      "__v": 0
-    },
-    {
       "_id": "680024f786e905667f95c5af",
       "name": "Nivea",
       "createdAt": "2025-04-16T21:45:27.883Z",
@@ -517,34 +518,6 @@ const categories = [
       "__v": 0
     },
     {
-      "_id": "680024f786e905667f95c5cb",
-      "name": "Coca-Cola",
-      "createdAt": "2025-04-16T21:45:27.902Z",
-      "updatedAt": "2025-04-16T21:45:27.902Z",
-      "__v": 0
-    },
-    {
-      "_id": "680024f786e905667f95c5cd",
-      "name": "Pepsi",
-      "createdAt": "2025-04-16T21:45:27.903Z",
-      "updatedAt": "2025-04-16T21:45:27.903Z",
-      "__v": 0
-    },
-    {
-      "_id": "680024f786e905667f95c5cf",
-      "name": "Nestlé",
-      "createdAt": "2025-04-16T21:45:27.904Z",
-      "updatedAt": "2025-04-16T21:45:27.904Z",
-      "__v": 0
-    },
-    {
-      "_id": "680024f786e905667f95c5d1",
-      "name": "Danone",
-      "createdAt": "2025-04-16T21:45:27.907Z",
-      "updatedAt": "2025-04-16T21:45:27.907Z",
-      "__v": 0
-    },
-    {
       "_id": "680024f786e905667f95c5d3",
       "name": "Unilever",
       "createdAt": "2025-04-16T21:45:27.908Z",
@@ -624,6 +597,48 @@ const categories = [
   ]
 }
   */
+
+      /*Products *
+
+      {
+            "_id": "6803bfdfff9c07c25b58ccb4",
+            "categoryId": {
+                "name": "Elektronik"
+            },
+            "brandId": {
+                "name": "Samsung"
+            },
+            "name": "Galaxy Buds Pro",
+            "description": "Aktif gürültü engelleme özellikli kablosuz kulaklık.",
+            "images": [],
+            "size": "Standart",
+            "color": "siyah",
+            "price": 2499.99,
+            "stock": 5,
+            "subCategory": "none",
+            "popularity": [],
+            "createdAt": "2025-04-19T15:23:11.285Z",
+            "updatedAt": "2025-04-19T15:23:11.285Z"
+        },
+        {
+            "_id": "6803c1f384dd2bd4275377f4",
+            "categoryId": {
+                "name": "Ayakkabı"
+            },
+            "brandId": null,
+            "name": "Nike Air Max 270",
+            "description": "Günlük kullanım için konforlu spor ayakkabı.",
+            "images": [],
+            "size": "42",
+            "color": "beyaz",
+            "price": 1899.9,
+            "stock": 5,
+            "subCategory": "man",
+            "popularity": [],
+            "createdAt": "2025-04-19T15:32:03.831Z",
+            "updatedAt": "2025-04-19T15:32:03.831Z"
+        }
+    */
 
     /* Finished */
     console.log('* Synchronized.')
