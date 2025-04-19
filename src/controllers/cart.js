@@ -15,20 +15,20 @@ module.exports = {
                 in: 'body',
                 required: true,
                 schema: {
-                    productId: "string",
                     quantity: 1
                 }
             }
         */
         
 
-            const {productId, quantity = 1} = req.body
+            const {id} = req.params
+            const {quantity = 1} = req.body
 
             if(!req.session.cart){
                 req.sesion.cart = []
             }
 
-            const product = await Product.findOne({_id: productId});
+            const product = await Product.findOne({_id: id});
 
             if(!product){
                 throw new Error('Product was not found')
