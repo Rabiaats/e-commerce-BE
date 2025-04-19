@@ -2,7 +2,7 @@
 
 const router = require('express').Router()
 
-const { list, create, paymentStripe, paymentCOD, read, update, deletee, verifyStripe } = require('../controllers/order');
+const { list, paymentStripe, paymentCOD, read, update, cancel, verifyStripe } = require('../controllers/order');
 
 const {isAdmin, isLogin} = require("../middlewares/permissions");
 
@@ -21,7 +21,7 @@ router.post('/stripe', paymentStripe)
 router.post('/verifyStripe', verifyStripe)
 
 router.route('/:id')
-    .get(read).put(isAdmin,update).patch(isAdmin,update).delete(deletee);
+    .get(read).put(isAdmin,update).patch(isAdmin,update).delete(cancel);
 
 /* ------------------------------------------------------- */
 module.exports = router;

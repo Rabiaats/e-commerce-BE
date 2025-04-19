@@ -1,32 +1,25 @@
-const Product = require("../models/product");
 const Order = require("../models/order");
+const quantity = require('./statusQuantity')
 
-module.exports = async (userId, items, paymentMethod, status) => {
+module.exports = async (userId, items, address, paymentMethod, status) => {
     
     if (!Array.isArray(items) || items.length === 0) {
         throw new Error("Cart is empty!");
     }
+    
+    const updateItems = await quantity(items)
 
     let totalAmount = 0;
-    const verifiedItems = [];
 
-    for (const item of items) {
-        const product = await Product.findById(item.productId);
-        if (!product) throw new Error("Product not found");
-
-        verifiedItems.push({
-            productId: product._id,
-            quantity: item.quantity,
-            price: product.price,
-        });
-
-        totalAmount += product.price * item.quantity;
+    for (const item of updateItems) {
+        totalAmount += item.price * item.quantity;
     }
 
     const newOrder = await Order.create({
         userId,
-        items: verifiedItems,
+        items: updateItems,
         amount: totalAmount,
+        address,
         status,
         paymentMethod,
     });

@@ -4,8 +4,8 @@ const Order = require('../models/order');
 const User = require('../models/user')
 const Stripe = require('stripe');
 
+const sendMail = require('../helpers/sendMail')
 const create = require('../services/orderCreate');
-const quantity = require('../services/statusQuantity');
 
 const CURRENCY = 'TRY'
 const DELIVERY_CHARGE = 55
@@ -15,6 +15,21 @@ const stripe = new Stripe(process.env.STRIPE_KEY)
 
 module.exports = {
 
+    
+    /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "List Orders"
+        #swagger.description = `
+            You can send query parameters with the endpoint to filter[], search[], sort[], page, and limit.
+            <ul> Examples:
+                <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>
+                <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
+                <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
+                <li>URL/?<b>page=2&limit=1</b></li>
+            </ul>
+        `
+    */
+
     list: async(req, res) => {
 
         let customFilter = [];
@@ -23,19 +38,32 @@ module.exports = {
             customFilter = {userId: req.user._id, status: {$ne: 'Pending'} }
         }
 
-        const result = await Order.findOne({_id: req.params.id, ...customFilter}).populate([
+        const result = await res.getModelList(Order, customFilter, [
             {path: 'userId', select: 'email firstname lastname phone'},
             {path: 'products', populate: {path: 'productId'}},
         ])
 
         res.status(200).send({
             error: false,
+            details: await res.getModelListDetails(Order, customFilter),
             result
         })
     },
     
     
     read: async(req, res) => {
+
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Get Order Details"
+        #swagger.description = `
+            Fetch the details of a specific order by ID.
+            <ul> Example:
+                <li>URL/:id</li>
+            </ul>
+        `
+    */
+
         
         let customFilter = [];
         
@@ -56,6 +84,18 @@ module.exports = {
     },
     
     update: async(req, res) => {
+
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Update Order Status"
+        #swagger.description = `
+            Update the status of an existing order.
+            <ul> Example:
+                <li>URL/:id - PUT request</li>
+                <li>Body: { "orderId": "123", "status": "Shipped" }</li>
+            </ul>
+        `
+    */
 
         try {
             
@@ -80,7 +120,18 @@ module.exports = {
     },
     
     // cancelled order
-    deletee: async(req, res) => {
+    cancel: async(req, res) => {
+
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Cancel Order"
+        #swagger.description = `
+            Cancel an order if it has not been confirmed.
+            <ul> Example:
+                <li>URL/:id - DELETE request</li>
+            </ul>
+        `
+    */
         
         let customFilter = [];
         
@@ -90,7 +141,7 @@ module.exports = {
         
         const data = await Order.findOne({_id: req.params.id, ...customFilter});
         
-        if(customFilter.length > 0 && !data.status !== 'Pending'){
+        if(!req.user.isAdmin && data.status !== 'Pending'){
             res.status(404).send({
                 error: true,
                 message: 'You cannot cancel because your order has been confirmed'
@@ -104,22 +155,55 @@ module.exports = {
         );
         
         
-        res.status(data.deletedCount ? 204 : 404).send({
-            error: !data.deletedCount,
+        res.status(result ? 204 : 404).send({
+            error: !result,
             result,
         })
     },
     
     //COD
     paymentCOD: async(req, res) => {
-        
+
+         /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Payment by Cash on Delivery"
+        #swagger.description = `
+            Create a new order with "Cash on Delivery" payment method.
+           <ul> Example usage:
+            <li>POST /paymentCOD</li>
+            <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
+        </ul>
+        `
+           #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    required: ["address"],
+                    properties: {
+                        address: {
+                            type: "string",
+                            example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    */
+     
+    if(!req.body.address){
+        res.status(404).send({
+            error: true,
+            message: 'Please send address information'
+        })
+    }
         req.body.userId = req.user._id;
 
-        const items = req.session.cart;
-
-        items = await quantity(items);
+        let items = req.session.cart;
         
-        const result = await create(req.body.userId, items, 'COD', 'Preparing')
+        const result = await create(req.body.userId, items, req.body.address, 'COD', 'Preparing')
 
         req.session.cart = []
 
@@ -132,7 +216,7 @@ module.exports = {
         await sendMail(
             result.userId.email,
             'New Paid Order Received',
-            `<h3>Your order number ${orderId} has been created and is being prepared</h3>`
+            `<h3>Your order number ${result._id} has been created and is being prepared</h3>`
         );
 
         
@@ -144,17 +228,51 @@ module.exports = {
     
     // stripe
     paymentStripe: async(req, res) => {
+
+            /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Payment by Cash on Delivery"
+        #swagger.description = `
+            Create a new order with "Cash on Delivery" payment method.
+           <ul> Example usage:
+            <li>POST /paymentCOD</li>
+            <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
+        </ul>
+        `
+           #swagger.requestBody = {
+        required: true,
+        content: {
+            "application/json": {
+                schema: {
+                    type: "object",
+                    required: ["address"],
+                    properties: {
+                        address: {
+                            type: "string",
+                            example: "nAtatürk Caddesi, Merkez Mahallesi, No:12 Daire:5\nİstanbul 34000"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    */
         
         try{
             
+            if(!req.body.address){
+                res.status(404).send({
+                    error: true,
+                    message: 'Please send address information'
+                })
+            }
+
             const {origin} = req.headers;
             
             req.body.userId = req.user._id;
             const items = req.session.cart;
 
-            items = await quantity(items);
-
-            const result = await create(req.body.userId, items, 'Stripe', 'Preparing')
+            const result = await create(req.body.userId, items, req.body.address,'Stripe', 'Preparing')
             
             const line_items = items.map((item) => ({
                 price_data: {
@@ -188,24 +306,45 @@ module.exports = {
             
             res.status(200).send({
                 error:false,
-                sesion_url: session.url
+                session_url: session.url
             })
             
             
-        }catch{
+        }catch(err){
             
             res.status(404).send({
                 error: true,
-                message: 'An error occurred during paying!'
-            })
+                message: 'An error occurred during the payment process. Please try again later.',
+                details: err.message
+            });
+            
             
         }
         
     },
 
     verifyStripe: async(req,res) => {
+
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Verify Stripe Payment"
+        #swagger.description = `
+            Verify the Stripe payment and update the order status accordingly.
+            <ul> Example:
+                <li>URL/verifyStripe - POST request</li>
+                <li>Body: { "orderId": "123", "success": "true" }</li>
+            </ul>
+        `
+        */
         
         const {orderId, success} = req.body;
+
+        if (!orderId) {
+            return res.status(404).send({
+                error: true,
+                message: 'Order ID is missing!'
+            });
+        }
         
         try {
             
