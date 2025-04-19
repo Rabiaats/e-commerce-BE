@@ -17,21 +17,22 @@ const stripe = new Stripe(process.env.STRIPE_KEY)
 module.exports = {
 
     
-    /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "List Orders"
-        #swagger.description = `
-            You can send query parameters with the endpoint to filter[], search[], sort[], page, and limit.
-            <ul> Examples:
-                <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>
-                <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
-                <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
-                <li>URL/?<b>page=2&limit=1</b></li>
-            </ul>
-        `
-    */
-
+    
     list: async(req, res) => {
+        
+        /*
+            #swagger.tags = ["Orders"]
+            #swagger.summary = "List Orders"
+            #swagger.description = `
+                You can send query parameters with the endpoint to filter[], search[], sort[], page, and limit.
+                <ul> Examples:
+                    <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>
+                    <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
+                    <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
+                    <li>URL/?<b>page=2&limit=1</b></li>
+                </ul>
+            `
+        */
 
         let customFilter = [];
 
@@ -52,8 +53,80 @@ module.exports = {
     },
     
     
-    read: async(req, res) => {
+    update: async(req, res) => {
+        
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Update Order Status"
+        #swagger.description = `
+        Update the status of an existing order.
+        <ul> Example:
+        <li>URL/:id - PUT request</li>
+        <li>Body: { "orderId": "123", "status": "Shipped" }</li>
+        </ul>
+        `
+        */
+       
+       try {
+           
+           const { orderId, status} = req.body;
+           
+           const result = await Order.findOneAndUpdate({_id: orderId}, {status}, {new: true})
+           
+           if(result.status === 'Cancelled'){
+               await increase(result.items)
+            }
+            
+            res.status(202).send({
+                error: false,
+                message: 'Status updated',
+                result
+            })
+            
+        } catch (err){
+            
+            res.status(404).send({
+                error: false,
+                message: err.message
+            })
+        }
+        
+    },
+    
+    // cancelled order
+    cancel: async(req, res) => {
 
+        /*
+        #swagger.tags = ["Orders"]
+        #swagger.summary = "Cancel Order"
+        #swagger.description = `
+        Cancel an order if it has not been confirmed.
+        <ul> Example:
+        <li>URL/:id - DELETE request</li>
+        <li>Body: { "orderId": "123"} || req.params${id}</li>
+        </ul>
+        `
+    */
+   
+        const id = req.body.orderId;
+        
+        const result = await Order.findOneAndUpdate(
+            {_id: id},
+            {$set: {status: 'cancelled'}},
+            {new: true}
+        );
+        
+        await increase(result.items)
+        
+        res.status(result ? 204 : 404).send({
+            error: !result,
+            result,
+        })
+    },
+    
+    //COD
+    read: async(req, res) => {
+ 
         /*
         #swagger.tags = ["Orders"]
         #swagger.summary = "Get Order Details"
@@ -64,7 +137,7 @@ module.exports = {
             </ul>
         `
     */
-
+ 
         
         let customFilter = [];
         
@@ -84,86 +157,14 @@ module.exports = {
         
     },
     
-    update: async(req, res) => {
-
-        /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "Update Order Status"
-        #swagger.description = `
-            Update the status of an existing order.
-            <ul> Example:
-                <li>URL/:id - PUT request</li>
-                <li>Body: { "orderId": "123", "status": "Shipped" }</li>
-            </ul>
-        `
-    */
-
-        try {
-
-            const { orderId, status} = req.body;
-
-            const result = await Order.findOneAndUpdate({_id: orderId}, {status}, {new: true})
-
-            if(result.status === 'Cancelled'){
-                await increase(result.items)
-            }
-
-            res.status(202).send({
-                error: false,
-                message: 'Status updated',
-                result
-            })
-
-        } catch (err){
-            
-            res.status(404).send({
-                error: false,
-                message: err.message
-            })
-        }
-        
-    },
-    
-    // cancelled order
-    cancel: async(req, res) => {
-
-        /*
-        #swagger.tags = ["Orders"]
-        #swagger.summary = "Cancel Order"
-        #swagger.description = `
-            Cancel an order if it has not been confirmed.
-            <ul> Example:
-                <li>URL/:id - DELETE request</li>
-                <li>Body: { "orderId": "123"} || req.params${id}</li>
-            </ul>
-        `
-    */
-
-        const id = req.body.orderId;
-        
-        const result = await Order.findOneAndUpdate(
-            {_id: id},
-            {$set: {status: 'cancelled'}},
-            {new: true}
-        );
-        
-        await increase(result.items)
-        
-        res.status(result ? 204 : 404).send({
-            error: !result,
-            result,
-        })
-    },
-    
-    //COD
     paymentCOD: async(req, res) => {
-
+        
         /*
             #swagger.tags = ["Orders"]
             #swagger.summary = "Payment by Cash on Delivery"
             #swagger.description = `
-                Create a new order with "Cash on Delivery" payment method.
-                <ul> Example usage:
+            Create a new order with "Cash on Delivery" payment method.
+            <ul> Example usage:
                     <li>POST /paymentCOD</li>
                     <li>Body: {"address": "Sokak, Mahalle, Bina\\nŞehir Posta Kodu"}</li>
                 </ul>

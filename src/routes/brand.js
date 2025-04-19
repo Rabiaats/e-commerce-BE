@@ -10,14 +10,16 @@ const {list, create, read, update, deletee} = require('../controllers/brand');
 const {isAdmin} = require('../middlewares/permissions');
 
 
-router.route('/')
-    .get(list)
-    .post(isAdmin,create)
+router.get('/',list)
+    
+router.use(isAdmin)
+
+router.post('/', create)
 
 router.route('/:id')
-    .get(isAdmin,read)
-    .put(isAdmin,update)
-    .patch(isAdmin,update)
-    .delete(isAdmin,deletee)
+    .get(read)
+    .put(update)
+    .patch(update)
+    .delete(deletee)
 
 module.exports = router;
