@@ -5,13 +5,11 @@ const router = require('express').Router()
 
 const {addToCart, updateCart, getUserCart} = require('../controllers/cart');
 
-const {isLogin} = require('../middlewares/permissions');
-
 router.route('/')
-    .post(addToCart)
+    .get(getUserCart)
 
 router.route('/:id')
-    .get(isLogin, getUserCart)
+    .post(addToCart)
     .put(updateCart)
 
 module.exports = router;

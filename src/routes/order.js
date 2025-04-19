@@ -21,7 +21,7 @@ router.post('/stripe', paymentStripe)
 router.post('/verifyStripe', verifyStripe)
 
 router.route('/:id')
-    .get(read).put(isAdmin,update).patch(isAdmin,update).delete(cancel);
+    .get(read).put(isAdmin,update).patch(isAdmin,update).delete(isAdmin,cancel);
 
 /* ------------------------------------------------------- */
 module.exports = router;
