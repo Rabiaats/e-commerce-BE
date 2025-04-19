@@ -691,30 +691,24 @@
             "description": ""
           }
         }
-      }
-    },
-    "/orders/cod": {
-      "post": {
+      },
+      "put": {
         "description": "",
         "responses": {
           "default": {
             "description": ""
           }
         }
-      }
-    },
-    "/orders/stripe": {
-      "post": {
+      },
+      "delete": {
         "description": "",
         "responses": {
           "default": {
             "description": ""
           }
         }
-      }
-    },
-    "/orders/verifyStripe": {
-      "post": {
+      },
+      "patch": {
         "description": "",
         "responses": {
           "default": {
@@ -739,49 +733,31 @@
             "description": ""
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/orders/cod": {
+      "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/orders/stripe": {
+      "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
           }
         }
-      },
-      "patch": {
+      }
+    },
+    "/orders/verifyStripe": {
+      "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -818,19 +794,9 @@
             "description": ""
           }
         }
-      }
-    },
-    "/cart/{id}": {
+      },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -838,6 +804,16 @@
         }
       },
       "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/cart/{id}": {
+      "post": {
         "description": "",
         "parameters": [
           {

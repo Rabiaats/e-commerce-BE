@@ -9,7 +9,7 @@ const upload = require('../middlewares/upload');
 router.get('/', list)
 router.get('/:id', read)
 
-router.use(isAdmin);
+// router.use(isAdmin);
 
 router.post('/', upload.array('image') ,create)
     // buradaki image ile input name=image eslesmeli

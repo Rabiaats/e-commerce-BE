@@ -637,6 +637,46 @@ const categories = [
             "popularity": [],
             "createdAt": "2025-04-19T15:32:03.831Z",
             "updatedAt": "2025-04-19T15:32:03.831Z"
+        },
+        {
+            "_id": "6803c4cb0b59a29899c51817",
+            "categoryId": {
+                "name": "Moda"
+            },
+            "brandId": {
+                "name": "Columbia"
+            },
+            "name": "Kadın T-shirt",
+            "description": "Kırmızı sıkmayan kadın t-shirt",
+            "images": [],
+            "size": "M",
+            "color": "Kırmızı",
+            "price": 599.99,
+            "stock": 2,
+            "subCategory": "woman",
+            "popularity": [],
+            "createdAt": "2025-04-19T15:44:11.021Z",
+            "updatedAt": "2025-04-19T15:44:11.021Z"
+        },
+        {
+          "categoryId": "680024f786e905667f95c56d",
+          "brandId": "680024f786e905667f95c5a9",
+          "name": "Erkek Spor Ayakkabı",
+          "description": "Günlük kullanım için ideal, nefes alabilen erkek spor ayakkabı.",
+          "images": [
+              "upload\\necktie-1284463_640.jpg",
+              "upload\\shoe-3769929_640.jpg"
+          ],
+          "size": "43",
+          "color": "Siyah",
+          "price": 2349.99,
+          "stock": 3,
+          "subCategory": "man",
+          "popularity": [],
+          "_id": "6803f5e4cb6acf3a90425d19",
+          "createdAt": "2025-04-19T19:13:40.323Z",
+          "updatedAt": "2025-04-19T19:13:40.323Z",
+          "__v": 0
         }
     */
 
