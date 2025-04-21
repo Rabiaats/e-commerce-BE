@@ -59,7 +59,10 @@ app.all('*', (req, res) => {
 
 app.use(require('./src/middlewares/errorHandler'))
 
-app.listen(PORT, () => console.log(`https://e-commerce-be-v4zj.onrender.com`))
+app.listen(PORT, HOST, () => console.log(`http://${HOST}:${PORT}`))
+
+/*
+// app.listen(PORT, () => console.log(`https://e-commerce-be-v4zj.onrender.com`))
 
 /* ------------------------------------------------------- */
 // Syncronization (must be in commentLine):
